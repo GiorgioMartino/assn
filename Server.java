@@ -28,16 +28,54 @@ public class Server extends UnicastRemoteObject implements IServer {
     }
 
     public User login(String username, String pw) {
-        System.out.println("Remote login called");
-        Optional<User> optUser = dataServer.getUsers().stream()
+        System.out.println(String.format("Remote login called for %s %s", username, pw));
+        return dataServer.getUsers().stream()
                 .filter(u -> u.getUsername().equals(username))
                 .filter(u -> u.getPassword().equals(pw))
-                .findFirst();
+                .findFirst()
+                .orElse(null);
+    }
 
-        if (optUser.isPresent()) {
-            return optUser.get();
-        } else
-            throw new RuntimeException("User not found");
+    public String handleFriendRequest(String from, String to) {
+        User userTo = getUserInfo(to);
+        User userFrom = getUserInfo(from);
+
+        if (userTo == null)
+            return "User not found";
+        if (userTo.getFriends().contains(userFrom.getUsername()))
+            return "Already friends";
+
+        userTo.getRequests().add(userFrom.getUsername());
+        System.out.println(String.format("%s requested friendship to %s",
+                userFrom.getUsername(),
+                userTo.getUsername()));
+        return "";
+    }
+
+    public String handleAcceptRequest(String from, String to) {
+        User requestingUser = getUserInfo(to);
+        User acceptingUser = getUserInfo(from);
+
+        if (requestingUser == null)
+            return "User not found";
+        if (!acceptingUser.getRequests().contains(requestingUser.getUsername()))
+            return "No request to accept";
+
+        acceptingUser.getRequests().remove(requestingUser.getUsername());
+        acceptingUser.getFriends().add(requestingUser.getUsername());
+        requestingUser.getFriends().add(acceptingUser.getUsername());
+
+        System.out.println(String.format("%s and %s are now friends!",
+                acceptingUser.getUsername(),
+                requestingUser.getUsername()));
+        return "";
+    }
+
+    public User getUserInfo(String username) {
+        return dataServer.getUsers().stream()
+                .filter(u -> u.getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
     }
 
 

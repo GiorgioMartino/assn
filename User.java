@@ -6,10 +6,10 @@ public class User implements Serializable {
     private UserInfo userInfo;
     private String username;
     private String password;
-    private List<UserInfo> friends;
-    private List<UserInfo> requests;
+    private List<String> friends;
+    private List<String> requests;
 
-    public User(UserInfo userInfo, String username, String password, List<UserInfo> friends, List<UserInfo> requests) {
+    public User(UserInfo userInfo, String username, String password, List<String> friends, List<String> requests) {
         this.userInfo = userInfo;
         this.username = username;
         this.password = password;
@@ -41,35 +41,31 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public List<UserInfo> getFriends() {
+    public List<String> getFriends() {
         return friends;
     }
 
-    public void setFriends(List<UserInfo> friends) {
+    public void setFriends(List<String> friends) {
         this.friends = friends;
     }
 
-    public List<UserInfo> getRequests() {
+    public List<String> getRequests() {
         return requests;
     }
 
-    public void setRequests(List<UserInfo> requests) {
+    public void setRequests(List<String> requests) {
         this.requests = requests;
     }
 
     @Override
     public String toString() {
         return userInfo +
-                "\nusername='" + username + '\'' +
-                "\npassword='" + password + '\'' +
-                "\nfriends=" + friends +
-                "\nrequests=" + requests;
+                "\nUsername='" + username + '\'' +
+                "\nPassword='" + password + '\'' +
+                "\nFriends=" + friends +
+                "\nRequests=" + requests;
     }
 
-    //    @Data
-//    @Builder
-//    @NoArgsConstructor
-//    @AllArgsConstructor
     public static class UserInfo implements Serializable {
         private String name;
         private String surname;
@@ -97,8 +93,8 @@ public class User implements Serializable {
 
         @Override
         public String toString() {
-            return "\nname='" + name + '\'' +
-                    "\nsurname='" + surname + '\'';
+            return "\nName='" + name + '\'' +
+                    "\nSurname='" + surname + '\'';
         }
     }
 }

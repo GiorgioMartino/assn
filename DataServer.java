@@ -1,3 +1,6 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,21 +13,21 @@ public class DataServer {
     }
 
     public void initUsers() {
-        users = List.of(new User(new User.UserInfo("Ad", "Min"),
-                        "admin",
-                        "admin",
-                        new ArrayList<>(),
-                        new ArrayList<>()),
-                new User(new User.UserInfo("Giorgio", "Martino"),
-                        "gmartino",
-                        "password",
-                        new ArrayList<>(),
-                        new ArrayList<>()),
-                new User(new User.UserInfo("Ilaria", "Incerti"),
-                        "lallina",
-                        "pwd",
+        users = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader("users.csv"))) {
+            String row;
+            while ((row = br.readLine()) != null) {
+                String[] values = row.split(";");
+                users.add(new User(new User.UserInfo(values[0], values[1]),
+                        values[2],
+                        values[3],
                         new ArrayList<>(),
                         new ArrayList<>()));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading CSV");
+        }
+
         System.out.println("Users initialized");
     }
 }

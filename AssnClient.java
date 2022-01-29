@@ -1,12 +1,15 @@
 import java.rmi.Naming;
+import java.rmi.RemoteException;
 import java.util.Scanner;
 
 public class AssnClient {
 
     public static final String MENU = "\n0 - Menu" +
             "\n1 - Get info about User" +
-//            "\n2 - See posts" +
+            "\n2 - Send request to User" +
+            "\n3 - Accept request from User" +
             "\n9 - Exit";
+    static IServer server = null;
 
     public static void main(String[] args) {
         if (args.length != 2)
@@ -14,14 +17,16 @@ public class AssnClient {
 
         String serverName = "//localhost:1099/ASSNServer";
 
-        IServer server = null;
         User user = null;
         try {
             server = (IServer) Naming.lookup(serverName);
             user = server.login(args[0], args[1]);
+            if (user == null) {
+                throw new RuntimeException("User not found");
+            }
             System.out.println("Successfully logged in as " + user.getUserInfo().getName() + " " + user.getUserInfo().getSurname());
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
 
         boolean loop = true;
@@ -30,20 +35,65 @@ public class AssnClient {
             System.out.println(MENU);
             Scanner scanner = new Scanner(System.in);
             choice = scanner.nextInt();
-            loop = choiceSwitch(choice, user, server);
+            loop = choiceSwitch(choice, user.getUsername());
         }
     }
 
-    private static boolean choiceSwitch(int choice, User user, IServer server) {
+    private static boolean choiceSwitch(int choice, String username) {
         switch (choice) {
             case 0:
                 return true;
             case 1:
-                System.out.println(user.toString());
+                System.out.println(getUserInfo(username));
+                return true;
+            case 2:
+                sendRequest(username);
+                return true;
+            case 3:
+                acceptRequest(username);
                 return true;
             case 9:
             default:
                 return false;
+        }
+    }
+
+    private static String getUserInfo(String username) {
+        try {
+            return server.getUserInfo(username).toString();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    private static void acceptRequest(String username) {
+        System.out.print("Accept request from <username>: ");
+        Scanner scanner = new Scanner(System.in);
+        String param = scanner.next();
+        try {
+            String res = server.handleAcceptRequest(username, param);
+            if (res.isEmpty())
+                System.out.println("Successfully accepted friendship request.");
+            else
+                System.out.println(res);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
+    }
+
+    private static void sendRequest(String username) {
+        System.out.print("Username: ");
+        Scanner scanner = new Scanner(System.in);
+        String param = scanner.next();
+        try {
+            String res = server.handleFriendRequest(username, param);
+            if (res.isEmpty())
+                System.out.println("Request successfully sent.");
+            else
+                System.out.println(res);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e.getMessage());
         }
     }
 
