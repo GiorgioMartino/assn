@@ -2,7 +2,8 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Server extends UnicastRemoteObject implements IServer {
 
@@ -78,5 +79,34 @@ public class Server extends UnicastRemoteObject implements IServer {
                 .orElse(null);
     }
 
+    public String createPostForUser(String username, String content) {
+        User user = getUserInfo(username);
 
+        if (user == null)
+            return "User not found";
+
+        Post post = new Post(UUID.randomUUID(),
+                user.getUsername(),
+                content,
+                new Date(System.currentTimeMillis()),
+                new ArrayList<>());
+
+        dataServer.getPosts().add(post);
+
+        System.out.println(String.format("New Post %s created by %s",
+                post.getUuid(),
+                post.getWriter()));
+        return "";
+    }
+
+    public List<Post> seePostsForUser(String username) {
+        User user = getUserInfo(username);
+
+        List<Post> posts = dataServer.getPosts().stream()
+                .filter(p -> user.getFriends().contains(p.getWriter()) ||
+                        p.getWriter().equals(user.getUsername()))
+                .collect(Collectors.toList());
+        Collections.reverse(posts);
+        return posts;
+    }
 }

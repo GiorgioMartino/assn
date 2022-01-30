@@ -8,6 +8,8 @@ public class AssnClient {
             "\n1 - Get info about User" +
             "\n2 - Send request to User" +
             "\n3 - Accept request from User" +
+            "\n4 - Write new Post" +
+            "\n5 - See Posts" +
             "\n9 - Exit";
     static IServer server = null;
 
@@ -52,9 +54,39 @@ public class AssnClient {
             case 3:
                 acceptRequest(username);
                 return true;
+            case 4:
+                writeNewPost(username);
+                return true;
+            case 5:
+                seePosts(username);
+                return true;
             case 9:
             default:
                 return false;
+        }
+    }
+
+    private static void seePosts(String username) {
+        try {
+            server.seePostsForUser(username)
+                    .forEach(System.out::println);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    private static void writeNewPost(String username) {
+        System.out.println("Write content:");
+        Scanner scanner = new Scanner(System.in);
+        String content = scanner.nextLine();
+        try {
+            String res = server.createPostForUser(username, content);
+            if (res.isEmpty())
+                System.out.println("Successfully created Post.");
+            else
+                System.out.println(res);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e.getMessage());
         }
     }
 

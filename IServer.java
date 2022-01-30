@@ -1,5 +1,6 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 
 public interface IServer extends Remote {
 
@@ -10,4 +11,8 @@ public interface IServer extends Remote {
     String handleAcceptRequest(String from, String to) throws RemoteException;
 
     User getUserInfo(String username) throws RemoteException;
+
+    String createPostForUser(String username, String content) throws RemoteException;
+
+    List<Post> seePostsForUser(String username) throws RemoteException;
 }

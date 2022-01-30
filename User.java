@@ -21,40 +21,20 @@ public class User implements Serializable {
         return userInfo;
     }
 
-    public void setUserInfo(UserInfo userInfo) {
-        this.userInfo = userInfo;
-    }
-
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public List<String> getFriends() {
         return friends;
     }
 
-    public void setFriends(List<String> friends) {
-        this.friends = friends;
-    }
-
     public List<String> getRequests() {
         return requests;
-    }
-
-    public void setRequests(List<String> requests) {
-        this.requests = requests;
     }
 
     @Override
@@ -79,16 +59,8 @@ public class User implements Serializable {
             return name;
         }
 
-        public void setName(String name) {
-            this.name = name;
-        }
-
         public String getSurname() {
             return surname;
-        }
-
-        public void setSurname(String surname) {
-            this.surname = surname;
         }
 
         @Override
