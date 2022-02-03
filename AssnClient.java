@@ -1,6 +1,7 @@
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class AssnClient {
 
@@ -10,6 +11,7 @@ public class AssnClient {
             "\n3 - Accept request from User" +
             "\n4 - Write new Post" +
             "\n5 - See Posts" +
+            "\n6 - Comment Post" +
             "\n9 - Exit";
     static IServer server = null;
 
@@ -60,10 +62,33 @@ public class AssnClient {
             case 5:
                 seePosts(username);
                 return true;
+            case 6:
+                commentPost(username);
+                return true;
             case 9:
             default:
                 return false;
         }
+    }
+
+    private static void commentPost(String username) {
+        System.out.print("Comment <post-id>: ");
+        Scanner scanner = new Scanner(System.in);
+        UUID uuid = UUID.fromString(scanner.next());
+        System.out.println("Write comment: ");
+        scanner = new Scanner(System.in);
+        String content = scanner.nextLine();
+
+        try {
+            String res = server.commentPostByUuid(username, uuid, content);
+            if (res.isEmpty())
+                System.out.println("Successfully commented Post " + uuid);
+            else
+                System.out.println(res);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
     }
 
     private static void seePosts(String username) {

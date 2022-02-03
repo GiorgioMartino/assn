@@ -2,6 +2,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public class Post implements Serializable {
 
@@ -21,10 +23,16 @@ public class Post implements Serializable {
 
     @Override
     public String toString() {
-        return "\n" + writer + ":\n\t" +
-                content + "\n\t" +
-                (comments.isEmpty() ? "" : "Comments: \n" + comments + "\n\t") +
-                "[\"" + DataServer.dateFormat.format(createdAt) + "\" \"" + uuid + "\"]";
+        return "\n("+DataServer.dateFormat.format(createdAt)+") " + writer + ": " +
+                content + "\n" +
+                (comments.isEmpty() ? "" : "Comments: " + printComments() + "\n") +
+                "[" + uuid + "]";
+    }
+
+    private String printComments() {
+        return comments.stream()
+                .map(Comment::toString)
+                .collect(Collectors.joining());
     }
 
     public UUID getUuid() {

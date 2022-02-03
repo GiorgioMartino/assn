@@ -1,6 +1,7 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.UUID;
 
 public interface IServer extends Remote {
 
@@ -15,4 +16,6 @@ public interface IServer extends Remote {
     String createPostForUser(String username, String content) throws RemoteException;
 
     List<Post> seePostsForUser(String username) throws RemoteException;
+
+    String commentPostByUuid(String username, UUID uuid, String content) throws RemoteException;
 }

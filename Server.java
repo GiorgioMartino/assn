@@ -109,4 +109,28 @@ public class Server extends UnicastRemoteObject implements IServer {
         Collections.reverse(posts);
         return posts;
     }
+
+    public String commentPostByUuid(String username, UUID uuid, String content) {
+        User user = getUserInfo(username);
+
+        Post post = dataServer.getPosts().stream()
+                .filter(p -> user.getFriends().contains(p.getWriter()) ||
+                        p.getWriter().equals(user.getUsername()))
+                .filter(p ->  p.getUuid().equals(uuid))
+                .findFirst()
+                .orElse(null);
+
+        if (post == null)
+            return "Cannot find post for uuid " + uuid;
+
+        post.getComments().add(new Comment(user.getUsername(),
+                content,
+                new Date(System.currentTimeMillis())));
+
+        System.out.println(String.format("New Comment added for Post %s by %s",
+                post.getUuid(),
+                user.getUsername()));
+
+        return "";
+    }
 }

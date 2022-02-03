@@ -1,15 +1,13 @@
+import java.io.Serializable;
 import java.util.Date;
-import java.util.UUID;
 
-public class Comment {
+public class Comment implements Serializable {
 
-    private UUID uuid;
-    private String writer;
-    private String content;
-    private Date createdAt;
+    private final String writer;
+    private final String content;
+    private final Date createdAt;
 
-    public Comment(UUID uuid, String writer, String content, Date createdAt) {
-        this.uuid = uuid;
+    public Comment(String writer, String content, Date createdAt) {
         this.writer = writer;
         this.content = content;
         this.createdAt = createdAt;
@@ -17,12 +15,8 @@ public class Comment {
 
     @Override
     public String toString() {
-        return writer + ": " + content + "\n" +
-                DataServer.dateFormat.format(createdAt);
-    }
-
-    public UUID getUuid() {
-        return uuid;
+        return "\n\t("+DataServer.dateFormat.format(createdAt)+") " +
+                writer + ": " + content;
     }
 
     public String getWriter() {

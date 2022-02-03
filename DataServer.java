@@ -8,7 +8,7 @@ import java.util.List;
 
 public class DataServer {
 
-    public static final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+    public static final DateFormat dateFormat = new SimpleDateFormat("E HH:mm");
     private List<User> users;
     private List<Post> posts;
 
