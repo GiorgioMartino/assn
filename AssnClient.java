@@ -1,5 +1,6 @@
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -13,14 +14,15 @@ public class AssnClient {
             "\n5 - See Posts" +
             "\n6 - Comment Post" +
             "\n9 - Exit";
-    static IServer server = null;
+    private static IServer server = null;
+    private static DataClient dataClient;
 
     public static void main(String[] args) {
         if (args.length != 2)
             throw new RuntimeException("Username and Password required.");
 
         String serverName = "//localhost:1099/ASSNServer";
-
+        dataClient = new DataClient();
         User user = null;
         try {
             server = (IServer) Naming.lookup(serverName);
@@ -28,6 +30,9 @@ public class AssnClient {
             if (user == null) {
                 throw new RuntimeException("User not found");
             }
+            dataClient.setUser(user);
+            dataClient.setUserExpires(new Date(System.currentTimeMillis() + 10000));
+            dataClient.setPostsExpires(new Date(System.currentTimeMillis()));
             System.out.println("Successfully logged in as " + user.getUserInfo().getName() + " " + user.getUserInfo().getSurname());
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
@@ -93,7 +98,11 @@ public class AssnClient {
 
     private static void seePosts(String username) {
         try {
-            server.seePostsForUser(username)
+            if (dataClient.arePostsExpired()) {
+                dataClient.setPosts(server.seePostsForUser(username));
+                dataClient.setPostsExpires(new Date(System.currentTimeMillis() + 10000));
+            }
+            dataClient.getPosts()
                     .forEach(System.out::println);
         } catch (RemoteException e) {
             throw new RuntimeException(e.getMessage());
@@ -117,7 +126,11 @@ public class AssnClient {
 
     private static String getUserInfo(String username) {
         try {
-            return server.getUserInfo(username).toString();
+            if (dataClient.isUserExpired()) {
+                dataClient.setUser(server.getUserInfo(username));
+                dataClient.setUserExpires(new Date(System.currentTimeMillis() + 10000));
+            }
+            return dataClient.getUser().toString();
         } catch (RemoteException e) {
             throw new RuntimeException(e.getMessage());
         }

@@ -29,7 +29,7 @@ public class Server extends UnicastRemoteObject implements IServer {
     }
 
     public User login(String username, String pw) {
-        System.out.println(String.format("Remote login called for %s %s", username, pw));
+        System.out.println(String.format("----- Remote login called for %s %s", username, pw));
         return dataServer.getUsers().stream()
                 .filter(u -> u.getUsername().equals(username))
                 .filter(u -> u.getPassword().equals(pw))
@@ -38,8 +38,9 @@ public class Server extends UnicastRemoteObject implements IServer {
     }
 
     public String handleFriendRequest(String from, String to) {
-        User userTo = getUserInfo(to);
-        User userFrom = getUserInfo(from);
+        System.out.println(String.format("----- Remote friend request called by %s", from));
+        User userTo = filterUser(to);
+        User userFrom = filterUser(from);
 
         if (userTo == null)
             return "User not found";
@@ -54,8 +55,9 @@ public class Server extends UnicastRemoteObject implements IServer {
     }
 
     public String handleAcceptRequest(String from, String to) {
-        User requestingUser = getUserInfo(to);
-        User acceptingUser = getUserInfo(from);
+        System.out.println(String.format("----- Remote accept request called by %s", from));
+        User requestingUser = filterUser(to);
+        User acceptingUser = filterUser(from);
 
         if (requestingUser == null)
             return "User not found";
@@ -73,6 +75,11 @@ public class Server extends UnicastRemoteObject implements IServer {
     }
 
     public User getUserInfo(String username) {
+        System.out.println(String.format("----- Remote user info called by %s", username));
+        return filterUser(username);
+    }
+
+    private User filterUser(String username) {
         return dataServer.getUsers().stream()
                 .filter(u -> u.getUsername().equals(username))
                 .findFirst()
@@ -80,7 +87,9 @@ public class Server extends UnicastRemoteObject implements IServer {
     }
 
     public String createPostForUser(String username, String content) {
-        User user = getUserInfo(username);
+        System.out.println(String.format("----- Remote create post called by %s", username));
+
+        User user = filterUser(username);
 
         if (user == null)
             return "User not found";
@@ -100,7 +109,9 @@ public class Server extends UnicastRemoteObject implements IServer {
     }
 
     public List<Post> seePostsForUser(String username) {
-        User user = getUserInfo(username);
+        System.out.println(String.format("----- Remote see posts called by %s", username));
+
+        User user = filterUser(username);
 
         List<Post> posts = dataServer.getPosts().stream()
                 .filter(p -> user.getFriends().contains(p.getWriter()) ||
@@ -111,7 +122,9 @@ public class Server extends UnicastRemoteObject implements IServer {
     }
 
     public String commentPostByUuid(String username, UUID uuid, String content) {
-        User user = getUserInfo(username);
+        System.out.println(String.format("----- Remote comment post called by %s", username));
+
+        User user = filterUser(username);
 
         Post post = dataServer.getPosts().stream()
                 .filter(p -> user.getFriends().contains(p.getWriter()) ||
