@@ -24,7 +24,7 @@ time is set to 10 seconds.
 ## Data Description
 
 Information about each User, including login credentials, connected friends and received requests needs to be stored.
-Also, each Post must have his unique data and al the comments saved.
+Also, each Post must have his unique data and all the comments saved.
 
 The DataBase has been implemented in-memory. It consists of four different entities:
 
@@ -43,7 +43,7 @@ Entity associated to `User`
 | password                                              |
 | `UserInfo` (name, surname)                            |
 | Friends (List of user's friends)                      |
-| Requests (List of user's pending friendship requests) |
+| Requests (List of user's pending friend requests) |
 
 Contains all the info about the users:
 
@@ -106,7 +106,7 @@ managing the read and write operations to the DataBase.
 One example of a sequence diagram has been represented, involving two different Users, and it shows 
 three consecutive actions:
 
-The first User send a friendship request to the second User.
+The first User send a friend request to the second User.
 
 The second User has to check its info in order to see the new request.
 
